@@ -2,13 +2,24 @@ from rest_framework import serializers
 from posts.models import Post, Group, Comment
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.PrimaryKeyRelatedField(
+        read_only=True, default=serializers.CurrentUserDefault())
+    post = serializers.PrimaryKeyRelatedField(read_only=True)
+
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'author', 'post', 'text', 'created')
+
+
 class PostSerializer(serializers.ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(
         read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Post
-        fields = ('id','text', 'author', 'group')
+        fields = ('id', 'text', 'author', 'image', 'group', 'pub_date')
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -17,7 +28,3 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'slug', 'description')
 
 
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ('author', 'post', 'text', 'created')

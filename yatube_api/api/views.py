@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from posts.models import Post, Group, Comment
 from api.serializers import PostSerializer, GroupSerializer, CommentSerializer
 
+
 class PostViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Post."""
     queryset = Post.objects.all()

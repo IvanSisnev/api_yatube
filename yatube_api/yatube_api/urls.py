@@ -13,12 +13,13 @@ from api.views import PostViewSet, GroupViewSet, CommentViewSet
 router = SimpleRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'groups', GroupViewSet)
-router.register(r'posts/(?P<post_id>\d+)/comments', CommentViewSet)
+router.register(r'posts/(?P<post_id>\d+)/comments', CommentViewSet,
+                basename='comment')
 
 urlpatterns = [
     path('api/v1/', include(router.urls)),
     path('admin/', admin.site.urls),
-    path('api-token-auth/', views.obtain_auth_token),
+    path('api/v1/api-token-auth/', views.obtain_auth_token),
 ]
 
 if settings.DEBUG:

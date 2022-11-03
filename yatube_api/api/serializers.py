@@ -3,8 +3,9 @@ from posts.models import Post, Group, Comment
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(
-        read_only=True, default=serializers.CurrentUserDefault())
+    author = serializers.StringRelatedField(read_only=True)
+    # author = serializers.PrimaryKeyRelatedField(
+    #     read_only=True, default=serializers.CurrentUserDefault())
     post = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
@@ -14,13 +15,13 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(
-        read_only=True, default=serializers.CurrentUserDefault())
+    author = serializers.StringRelatedField(read_only=True)
+    # author = serializers.PrimaryKeyRelatedField(
+    #     read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Post
         fields = ('id', 'text', 'author', 'image', 'group', 'pub_date')
-
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:

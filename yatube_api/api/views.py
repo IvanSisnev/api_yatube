@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
@@ -13,18 +13,18 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+        return Response(serializer.data)
 
-    def update(self, request, *args, **kwargs):
-        post = self.get_object()
-        if self.request.user != post.author:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        self.perform_update(post)
+    def perform_update(self, serializer):
+        if self.request.user != serializer.instance.author:
+            raise PermissionDenied
+        serializer.save()
+        return Response(serializer.data)
 
-    def destroy(self, request, *args, **kwargs):
-        post = self.get_object()
+    def perform_destroy(self, post):
         if self.request.user != post.author:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        self.perform_destroy(post)
+            raise PermissionDenied
+        post.delete()
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -44,15 +44,13 @@ class CommentViewSet(viewsets.ModelViewSet):
         post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
         serializer.save(author=self.request.user, post=post)
 
-    def update(self, request, *args, **kwargs):
-        comment = self.get_object()
-        if self.request.user != comment.author:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        return self.perform_update(comment)
+    def perform_update(self, serializer):
+        if self.request.user != serializer.instance.author:
+            raise PermissionDenied
+        serializer.save()
+        return Response(serializer.data)
 
-    def destroy(self, request, *args, **kwargs):
-        comment = self.get_object()
+    def perform_destroy(self, comment):
         if self.request.user != comment.author:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        self.perform_destroy(comment)
-
+            raise PermissionDenied
+        comment.delete()

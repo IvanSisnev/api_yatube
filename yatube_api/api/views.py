@@ -1,36 +1,23 @@
 """
 Класс вьюсетов для api_yatube
 """
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-from rest_framework.response import Response
 
-from posts.models import Post, Group, Comment
+from posts.models import Post, Group
 from api.serializers import PostSerializer, GroupSerializer, CommentSerializer
+from api.permissions import AuthorOrReadOnly
 
 
 class PostViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Post."""
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = (AuthorOrReadOnly,)
 
     def perform_create(self, serializer):
         """Метод POST для создания поста."""
         serializer.save(author=self.request.user)
-
-    def perform_update(self, serializer):
-        """Методы PUT, PATCH для изменения поста."""
-        if self.request.user != serializer.instance.author:
-            raise PermissionDenied
-        serializer.save()
-        return Response(serializer.data)
-
-    def perform_destroy(self, instance):
-        """Метод DELETE для удаления поста."""
-        if self.request.user != instance.author:
-            raise PermissionDenied
-        instance.delete()
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -42,6 +29,7 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Comment."""
     serializer_class = CommentSerializer
+    permission_classes = (AuthorOrReadOnly,)
 
     def get_queryset(self):
         """Метод для создания queryset комментариев поста."""
@@ -54,16 +42,3 @@ class CommentViewSet(viewsets.ModelViewSet):
         """Метод POST для создания комментария."""
         post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
         serializer.save(author=self.request.user, post=post)
-
-    def perform_update(self, serializer):
-        """Методы PUT, PATCH для изменения комментария."""
-        if self.request.user != serializer.instance.author:
-            raise PermissionDenied
-        serializer.save()
-        return Response(serializer.data)
-
-    def perform_destroy(self, instance):
-        """Метод DELETE для удаления комментария."""
-        if self.request.user != instance.author:
-            raise PermissionDenied
-        instance.delete()

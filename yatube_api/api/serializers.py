@@ -9,8 +9,6 @@ from posts.models import Post, Group, Comment
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Comment."""
     author = serializers.StringRelatedField(read_only=True)
-    # author = serializers.PrimaryKeyRelatedField(
-    #     read_only=True, default=serializers.CurrentUserDefault())
     post = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
@@ -21,9 +19,6 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Post."""
     author = serializers.StringRelatedField(read_only=True)
-
-    # author = serializers.PrimaryKeyRelatedField(
-    #     read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Post

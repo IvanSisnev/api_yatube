@@ -46,8 +46,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Метод для создания queryset комментариев поста."""
         post_id = self.kwargs.get('post_id')
-        new_queryset = Comment.objects.filter(post=post_id)
-        return new_queryset
+        post = get_object_or_404(Post, pk=post_id)
+        comments = post.comments.all()
+        return comments
 
     def perform_create(self, serializer):
         """Метод POST для создания комментария."""

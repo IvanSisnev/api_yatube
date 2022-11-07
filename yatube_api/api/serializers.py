@@ -8,8 +8,10 @@ from posts.models import Post, Group, Comment
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Comment."""
-    author = serializers.StringRelatedField(read_only=True)
-    post = serializers.PrimaryKeyRelatedField(read_only=True)
+    author = serializers.SlugRelatedField(read_only=True,
+                                          slug_field='username')
+    # read_only пришлось оставить здесь, с read_only_fields тесты не проходят
+    post = serializers.SlugRelatedField(read_only=True, slug_field='id')
 
     class Meta:
         model = Comment

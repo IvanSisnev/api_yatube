@@ -18,7 +18,6 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Метод POST для создания поста."""
         serializer.save(author=self.request.user)
-        return Response(serializer.data)
 
     def perform_update(self, serializer):
         """Методы PUT, PATCH для изменения поста."""
